@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poker After Dawn | Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@500&display=swap');
+        
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .mono { font-family: 'JetBrains Mono', monospace; }
+
+        .card-bg {
+            background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
+            border: 1px solid #222;
+        }
+
+        .suit-spade { fill: #fff; }
+        .suit-heart { fill: #ef4444; }
+        .suit-club { fill: #10b981; } /* Classic 4-color Green */
+        .suit-diamond { fill: #06b6d4; } /* Classic 4-color Cyan */
+
+        .scanline {
+            width: 100%;
+            height: 2px;
+            background: rgba(0, 255, 255, 0.03);
+            position: absolute;
+            animation: move 8s linear infinite;
+        }
+
+        @keyframes move {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-12 relative overflow-x-hidden">
+    <div class="scanline"></div>
+
+    <!-- Header -->
+    <header class="p-6 text-center border-b border-zinc-900">
+        <h1 class="text-[10px] tracking-[0.5em] uppercase text-zinc-500 font-black mb-1">Poker After Dawn</h1>
+        <div class="h-[1px] w-12 bg-zinc-800 mx-auto mb-4"></div>
+        <p class="text-xl mono tracking-widest text-white uppercase">Reference_Guide</p>
+    </header>
+
+    <main class="max-w-md mx-auto p-4 space-y-2" id="hands-container">
+        <!-- Hands will be injected here by JS -->
+    </main>
+
+    <footer class="mt-8 text-center pb-12">
+        <p class="text-[8px] tracking-[0.3em] text-zinc-700 uppercase italic">Skill beats luck. Stay sharp.</p>
+    </footer>
+
+    <script>
+        const HANDS = [
+            { name: "Royal Flush", cards: [{v:'A',s:'spade'},{v:'K',s:'spade'},{v:'Q',s:'spade'},{v:'J',s:'spade'},{v:'10',s:'spade'}] },
+            { name: "Straight Flush", cards: [{v:'9',s:'heart'},{v:'8',s:'heart'},{v:'7',s:'heart'},{v:'6',s:'heart'},{v:'5',s:'heart'}] },
+            { name: "Four of a Kind", cards: [{v:'A',s:'spade'},{v:'A',s:'heart'},{v:'A',s:'club'},{v:'A',s:'diamond'},{v:'K',s:'spade'}] },
+            { name: "Full House", cards: [{v:'K',s:'spade'},{v:'K',s:'heart'},{v:'K',s:'club'},{v:'Q',s:'diamond'},{v:'Q',s:'spade'}] },
+            { name: "Flush", cards: [{v:'A',s:'club'},{v:'J',s:'club'},{v:'8',s:'club'},{v:'4',s:'club'},{v:'2',s:'club'}] },
+            { name: "Straight", cards: [{v:'10',s:'spade'},{v:'9',s:'heart'},{v:'8',s:'diamond'},{v:'7',s:'club'},{v:'6',s:'spade'}] },
+            { name: "Three of a Kind", cards: [{v:'7',s:'spade'},{v:'7',s:'heart'},{v:'7',s:'club'},{v:'K',s:'diamond'},{v:'3',s:'spade'}] },
+            { name: "Two Pair", cards: [{v:'A',s:'spade'},{v:'A',s:'heart'},{v:'J',s:'club'},{v:'J',s:'diamond'},{v:'5',s:'spade'}] },
+            { name: "One Pair", cards: [{v:'10',s:'spade'},{v:'10',s:'heart'},{v:'A',s:'club'},{v:'K',s:'diamond'},{v:'4',s:'spade'}] },
+            { name: "High Card", cards: [{v:'A',s:'spade'},{v:'K',s:'heart'},{v:'J',s:'club'},{v:'7',s:'diamond'},{v:'2',s:'spade'}] }
+        ];
+
+        // Refined "Proper" Suit Paths
+        const suits = {
+            spade: 'M12 2C11.3 2 7 6.5 7 11c0 2.5 2 4.5 4.5 4.5.3 0 .6 0 .9-.1V14c-.3 0-.6.1-.9.1-1.4 0-2.5-1.1-2.5-2.5 0-3.5 3-6 3-6s3 2.5 3 6c0 1.4-1.1 2.5-2.5 2.5-.3 0-.6 0-.9-.1v1.4c.3 0 .6.1.9.1 2.5 0 4.5-2 4.5-4.5 0-4.5-4.3-9-5-9zm1.5 19.5h-3v-2.5c1.2-.2 1.5-1 1.5-1s.3.8 1.5 1v2.5z',
+            heart: 'M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z',
+            club: 'M12 2c-2 0-3.5 1.5-3.5 3.5 0 1 .4 1.8 1 2.5-1.5.3-2.5 1.8-2.5 3.3 0 2 1.5 3.5 3.5 3.5.5 0 .9-.1 1.3-.3-.2.5-.3 1-.3 1.5 0 2 1.5 3.5 3.5 3.5s3.5-1.5 3.5-3.5c0-.5-.1-1-.3-1.5.4.2.8.3 1.3.3 2 0 3.5-1.5 3.5-3.5 0-1.5-1-3-2.5-3.3.6-.7 1-1.5 1-2.5C15.5 3.5 14 2 12 2zM13.5 21.5h-3v-2.5c1.2-.2 1.5-1 1.5-1s.3.8 1.5 1v2.5z',
+            diamond: 'M12 2L4.5 12 12 22l7.5-10L12 2z'
+        };
+
+        const container = document.getElementById('hands-container');
+
+        HANDS.forEach((hand, i) => {
+            const handDiv = document.createElement('div');
+            handDiv.className = 'flex flex-col gap-3 p-4 border-b border-zinc-900 last:border-0 hover:bg-zinc-900/30 transition-all rounded-lg';
+            
+            let cardHtml = hand.cards.map(card => `
+                <div class="card-bg flex flex-col items-center justify-center w-9 h-14 rounded-md shadow-lg transform hover:-translate-y-1 transition-transform">
+                    <span class="text-[13px] font-black tracking-tighter ${card.s === 'heart' ? 'text-red-500' : card.s === 'diamond' ? 'text-cyan-400' : card.s === 'club' ? 'text-emerald-400' : 'text-white'}">${card.v}</span>
+                    <svg viewBox="0 0 24 24" class="w-3.5 h-3.5 suit-${card.s} mt-0.5"><path d="${suits[card.s]}" /></svg>
+                </div>
+            `).join('');
+
+            handDiv.innerHTML = `
+                <div class="flex justify-between items-center">
+                    <span class="mono text-[9px] text-zinc-600 uppercase tracking-widest">Rank ${10 - i}</span>
+                    <span class="text-xs font-bold tracking-widest uppercase text-zinc-200">${hand.name}</span>
+                </div>
+                <div class="flex gap-2">
+                    ${cardHtml}
+                </div>
+            `;
+            container.appendChild(handDiv);
+        });
+    </script>
+</body>
+</html>
